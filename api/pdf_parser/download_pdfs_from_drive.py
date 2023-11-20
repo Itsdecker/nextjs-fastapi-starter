@@ -1,14 +1,12 @@
 import io
 import os
-from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from dotenv import load_dotenv
+from google_credentials import get_google_credentials  # Import the function
 
 # Load environment variables from .env file
 load_dotenv()
-
-SERVICE_ACCOUNT_FILE = 'credentials.json'
 
 # Get the directory of the current script
 current_script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -25,9 +23,8 @@ PROCESSED_FOLDER_ID = os.getenv('PROCESSED_FOLDER_ID')
 
 
 def main():
-    # Authenticate using the service account file
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=['https://www.googleapis.com/auth/drive'])
+    # Authenticate using the centralized credentials function
+    credentials = get_google_credentials()
 
     # Connect to the Drive API
     service = build('drive', 'v3', credentials=credentials)

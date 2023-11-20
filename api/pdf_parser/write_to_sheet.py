@@ -1,15 +1,15 @@
 import pandas as pd
 import os
 import shutil
-from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
+# Import your credentials function
+from google_credentials import get_google_credentials
 
 # Load environment variables
 load_dotenv()
 
-# Service account file and Google Sheet ID
-SERVICE_ACCOUNT_FILE = 'credentials.json'
+# Google Sheet ID
 SHEET_ID = os.getenv('GOOGLE_SHEETS_ID')
 
 # Function to clean a directory
@@ -28,10 +28,8 @@ def clean_directory(directory):
 
 
 def main():
-    # Authenticate using the service account file
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE,
-        scopes=['https://www.googleapis.com/auth/spreadsheets'])
+    # Authenticate using the centralized credentials function
+    credentials = get_google_credentials()
 
     # Connect to the Sheets API
     service = build('sheets', 'v4', credentials=credentials)
@@ -59,9 +57,7 @@ def main():
     values = dataframe.values.tolist()
 
     # Append data to Google Sheet
-    body = {
-        'values': values
-    }
+    body = {'values': values}
     result = sheet.values().append(
         spreadsheetId=SHEET_ID,
         range='A1',
